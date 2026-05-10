@@ -11,8 +11,8 @@ class JWTHelper{
         $issued_at = time();
         $expires_at = $issued_at + 1800; // nos sa3a
         $payload = [
-            'issued_at' => $issued_at,
-            'expires_at' => $expires_at,
+            'iat' => $issued_at,
+            'exp' => $expires_at,
             'data' => [
                 'user_id' => $data['id'],
                 'role' => $data['role']
@@ -23,11 +23,7 @@ class JWTHelper{
 
     public static function decodeJWT ($token){
         try{
-            $decoded = JWT::decode($token,new Key(self::$secret_key, self::$algorithm));
-            if($decoded->expires_at < time()){
-                return Response::send('Token expired', 401);
-            }
-            return $decoded;
+            return $decoded = JWT::decode($token,new Key(self::$secret_key, self::$algorithm));
         }catch(Exception $e){
             return Response::send('Invalid token', 401);
         }
