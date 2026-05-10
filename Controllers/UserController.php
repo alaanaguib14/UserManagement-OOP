@@ -9,48 +9,25 @@ class UserController {
         $this->repo = new UserRepository();
     }
 
-    public function login() {
+    public function login(){
         $data = json_decode(file_get_contents('php://input'), true);
 
-        // Validate input
         if (empty($data['email']) || empty($data['password'])) {
             Response::send('Email and password are required', 400);
         }
 
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            Response::send('Invalid email format', 400);
-        }
-
         $user = $this->repo->getUserByEmail($data['email']);
 
-        if (!$user) {
+        if(!$user) {
             Response::send('Invalid credentials', 401);
         }
 
-        // Verify password
-        if (!password_verify($data['password'], $user['password'])) {
+        if(!password_verify($data['password'], $user['password'])) {
             Response::send('Invalid credentials', 401);
         }
+        $token = JWTHelper::encodeJWT($user);
 
-        // Generate JWT token
-        $payload = [
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
-            'role' => $user['role']
-        ];
-
-        // $token = JWT::generate($payload);
-
-        Response::send('Login successful', 200, [
-            //'token' => $token,
-            'user' => [
-                'id' => $user['id'],
-                'email' => $user['email'],
-                'name' => $user['name'],
-                'role' => $user['role']
-            ]
-        ]);
+        Response::send('Login successful', 200, ['token' => $token]);
     }
     public function index() {
         $payload = AuthMiddleware::handle();

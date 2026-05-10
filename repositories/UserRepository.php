@@ -9,28 +9,28 @@ class UserRepository {
     }
     public function getAllUsers(){
         $query = "SELECT * FROM users";
-        $stmt = $this->db->query($query);
-        return $stmt->fetchAll();
+        $statement = $this->db->query($query);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     function getUserById($id){
         $query = "SELECT * FROM users WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
+        $statement = $this->db->prepare($query);
+        $statement->execute(['id' => $id]);
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
     function getUserByEmail($email){
         $query = "SELECT * FROM users WHERE email = :email";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute(['email' => $email]);
-        return $stmt->fetch();
+        $statement = $this->db->prepare($query);
+        $statement->execute(['email' => $email]);
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
     function createUser($name, $email, $password, $role){
         $query = "INSERT INTO users (name, email, password, role)
                  VALUES (:name, :email, :password, :role)";
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([
+        $statement = $this->db->prepare($query);
+        return $statement->execute([
             ':name'     => $name,
             ':email'    => $email,
             ':password' => $password,
@@ -39,8 +39,8 @@ class UserRepository {
     }
     function updateUser($id, $data){
         $query = "UPDATE users SET name = :name, email = :email WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([
+        $statement = $this->db->prepare($query);
+        return $statement->execute([
             ':id'       => $id,
             ':name'     => $data['name'],
             ':email'    => $data['email']
@@ -48,7 +48,7 @@ class UserRepository {
     }
     function deleteUser($id){
         $query = "DELETE FROM users WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([':id' => $id]);
+        $statement = $this->db->prepare($query);
+        return $statement->execute([':id' => $id]);
     }
 }
